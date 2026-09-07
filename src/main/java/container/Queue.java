@@ -13,7 +13,7 @@ public interface Queue<E> extends Iterable<E> {
      * Retrieves (without removing) the highest element of this queue
      *
      * @return the highest element of this queue
-     * @throws NoSuchElementException if this queue is empty
+     * @throws NoSuchElementException if this queue isls empty
      */
     E element();
 
