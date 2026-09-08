@@ -17,13 +17,19 @@ public class IntFIFO implements Queue<Integer>{
 
     public static void main() {
         IntFIFO test_fifo = new IntFIFO(10);
-
+        test_fifo.insertElement(1);
+        test_fifo.insertElement(2);
+        test_fifo.insertElement(3);
+        System.out.println(test_fifo.popElement());
+        System.out.println(test_fifo.popElement());
+        System.out.println(test_fifo.popElement());
+        System.out.println(test_fifo.size());
     }
 
 
     @Override
     public boolean insertElement(Integer integer) {
-        if (this.insertIndex != this.popIndex || this.tab[this.insertIndex] != null) {
+        if (this.insertIndex != this.popIndex || this.tab[this.insertIndex] == null) {
             this.tab[insertIndex] = integer;
             this.popIndex = 0;
             this.insertIndex += 1;
@@ -70,7 +76,7 @@ public class IntFIFO implements Queue<Integer>{
 
     @Override
     public int size() {
-        if (this.insertIndex-this.popIndex > 0) return this.insertIndex-this.popIndex;
+        if (this.insertIndex-this.popIndex >= 0) return this.insertIndex-this.popIndex;
         else return this.insertIndex + this.tab.length - this.popIndex;
     }
 
