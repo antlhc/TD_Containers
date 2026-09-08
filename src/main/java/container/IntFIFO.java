@@ -1,5 +1,6 @@
 package container;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 public class IntFIFO implements Queue<Integer>{
@@ -27,43 +28,54 @@ public class IntFIFO implements Queue<Integer>{
             this.popIndex = 0;
             this.insertIndex += 1;
             this.insertIndex %= this.capacity;
-            return true;
         } else {
             this.capacity *= 2;
+            int len = this.tab.length;
             Integer[] tempTab = new Integer[this.capacity];
-            for (int i = this.popIndex; i<this.tab.length; i++) {
+            for (int i = this.popIndex; i<len; i++) {
                 tempTab[i-this.popIndex] = this.tab[i];
             }
             for (int i=0; i<this.popIndex; i++) {
-                tempTab[i+(this.tab.length-this.popIndex)] = this.tab[i];
+                tempTab[i+(len-this.popIndex)] = this.tab[i];
             }
+            this.tab = tempTab;
+            this.popIndex = 0;
+            this.insertIndex = len;
         }
-
-        return false;
+        return true;
     }
 
     @Override
     public Integer element() {
-        return 0;
+        // max
+        if (!this.isEmpty()) return this.tab[this.popIndex];
+        else return null;
     }
 
     @Override
-    public Integer popElement() {
-        return 0;
+    public Integer popElement() { // modifier pour gérer mieux le cas où il ne reste plus qu'un seul élément dans la queue
+        Integer value = this.element();
+        if (value != null) {
+            if (this.popIndex != this.tab.length-1) this.popIndex++;
+            else this.popIndex = 0;
+            return value;
+        }
+        return null;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return (this.popIndex == this.insertIndex);
     }
 
     @Override
     public int size() {
-        return 0;
+        if (this.insertIndex-this.popIndex > 0) return this.insertIndex-this.popIndex;
+        else return this.insertIndex + this.tab.length - this.popIndex;
     }
 
     @Override
     public Iterator<Integer> iterator() {
-        return null;
+        return Arrays.stream(this.tab).iterator(); // modifier pour que ça marche
     }
 }
