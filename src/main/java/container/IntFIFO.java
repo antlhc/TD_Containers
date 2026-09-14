@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 public class IntFIFO implements Queue<Integer>{
-    private int capacity = 0;
-    private Integer[] tab = null;
-    private int insertIndex = 0;
-    private int popIndex = 0;
+    private int capacity;
+    private Integer[] tab;
+    private int insertIndex;
+    private int popIndex;
 
     IntFIFO(int capacity) {
         this.capacity = capacity;
@@ -15,13 +15,11 @@ public class IntFIFO implements Queue<Integer>{
 
     }
 
-    public static void main() {
+    static void main() {
         IntFIFO test_fifo = new IntFIFO(10);
         test_fifo.insertElement(1);
         test_fifo.insertElement(2);
         test_fifo.insertElement(3);
-        System.out.println(test_fifo.popElement());
-        System.out.println(test_fifo.popElement());
         System.out.println(test_fifo.popElement());
         System.out.println(test_fifo.size());
     }
@@ -82,6 +80,33 @@ public class IntFIFO implements Queue<Integer>{
 
     @Override
     public Iterator<Integer> iterator() {
-        return Arrays.stream(this.tab).iterator(); // modifier pour que ça marche
+        return new IntFIFOIterator(this);
+    }
+
+    static class IntFIFOIterator implements Iterator<Integer> {
+        int currentIndex;
+        Integer[] tab;
+        int endFIFO;
+        int beginFIFO;
+
+        IntFIFOIterator(IntFIFO list) {
+            this.currentIndex = list.popIndex;
+            this.tab = list.tab;
+            this.endFIFO = list.insertIndex;
+            this.beginFIFO = list.popIndex;
+        }
+
+        @Override
+        public Integer next() {
+            int temp = this.tab[currentIndex];
+            this.currentIndex++;
+            if (this.currentIndex >= this.tab.length) this.currentIndex = 0;
+            return temp;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return (this.currentIndex >= this.endFIFO && this.currentIndex <= this.beginFIFO);
+        }
     }
 }

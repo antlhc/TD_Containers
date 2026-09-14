@@ -31,14 +31,17 @@ public class IntPriorityQueue implements Queue<Integer>{
         }// Alors par construction, on a forcément trouvé un emplacement vide d'après le if
         // On insère le nouvel élément à la fin du tas
         this.heapTable[i] = integer;
-        // On fait l'algorithme de remontage
+        // On fait l'algorithme de percolation vers le haut
         int indexParent = i/2-1;
         while (indexParent >= 0 && this.heapTable[indexParent] < this.heapTable[i]) {
             int temp = this.heapTable[indexParent];
-            this.heapTable[indexParent] =
+            this.heapTable[indexParent] = this.heapTable[i];
+            this.heapTable[i] = temp;
+            i = indexParent;
+            indexParent = i/2-1;
         }
 
-        return false;
+        return true;
     }
 
     @Override
@@ -49,7 +52,36 @@ public class IntPriorityQueue implements Queue<Integer>{
 
     @Override
     public Integer popElement() {
-        return 0;
+        if (this.isEmpty()) return -1;
+        // On recherche le premier emplacement vide
+        int i = 0;
+        while (i < this.heapTable.length && this.heapTable[i] != null) i++;
+        // On echange le premier element et le dernier element i.e. l'élément à l'index i-1
+        int poppedElement = this.heapTable[0];
+        this.heapTable[0] = this.heapTable[i];
+        // On supprime le dernier element
+        this.heapTable[i] = null;
+        // On percole vers le bas le premier element
+        i = 0;
+        int indexLeftChild = 1;
+        int indexRightChild = 2;
+        while ((indexLeftChild < this.capacity && this.heapTable[indexLeftChild] > this.heapTable[i])
+                || (indexRightChild < this.capacity && this.heapTable[indexRightChild] > this.heapTable[i])) {
+            if (this.heapTable[indexLeftChild] > this.heapTable[i]) {
+                int temp = this.heapTable[indexLeftChild];
+                this.heapTable[indexLeftChild] = this.heapTable[i];
+                this.heapTable[i] = temp;
+                i = indexLeftChild;
+                indexLeftChild = 2*i+1;
+            }
+            int temp = this.heapTable[indexRightChild];
+            this.heapTable[indexRightChild] = this.heapTable[i];
+            this.heapTable[i] = temp;
+            i = indexRightChild;
+            indexRightChild = 2*i+1;
+
+        }
+        return poppedElement;
     }
 
     @Override
@@ -64,6 +96,39 @@ public class IntPriorityQueue implements Queue<Integer>{
 
     @Override
     public Iterator<Integer> iterator() {
-        return null;
+        return new IntPriorityQueueIterator(this);
+    }
+
+    class IntPriorityQueueIterator implements Iterator<Integer>{
+        Integer[] tab;
+        int currentIndex;
+
+        IntPriorityQueueIterator(IntPriorityQueue obj) {
+            this.tab = obj.heapTable;
+            this.currentIndex = 0;
+
+        }
+
+        @Override
+        public boolean hasNext() {
+            int indexLeftChild = 2*this.currentIndex + 1;
+            int indexRightChild = 2*this.currentIndex + 2;
+            return (indexLeftChild < this.tab.length && this.tab[indexLeftChild] != null) ||
+                    (indexRightChild < this.tab.length && this.tab[indexRightChild] != null);
+        }
+
+        @Override
+        public Integer next() {
+            int indexLeftChild = 2*this.currentIndex + 1;
+            int indexRightChild = 2*this.currentIndex + 2;
+            if (this.tab[indexLeftChild] != null) {
+                this.currentIndex = indexLeftChild;
+                return this.tab[indexLeftChild];
+            }
+            else {
+                this.currentIndex = indexRightChild;
+                return this.tab[indexRightChild];
+            }
+        }
     }
 }
