@@ -13,8 +13,13 @@ public class IntPriorityQueue implements Queue<Integer>{
 
     }
 
-    public static void main() {
+    static void main() {
         IntPriorityQueue testHeap = new IntPriorityQueue(10);
+        testHeap.insertElement(5);
+        testHeap.insertElement(6);
+        testHeap.insertElement(3);
+        testHeap.insertElement(4);
+        System.out.println(testHeap.popElement());
     }
 
     @Override
@@ -40,7 +45,7 @@ public class IntPriorityQueue implements Queue<Integer>{
             i = indexParent;
             indexParent = i/2-1;
         }
-
+        this.nbElements++;
         return true;
     }
 
@@ -57,6 +62,7 @@ public class IntPriorityQueue implements Queue<Integer>{
         int i = 0;
         while (i < this.heapTable.length && this.heapTable[i] != null) i++;
         // On echange le premier element et le dernier element i.e. l'élément à l'index i-1
+        i = i-1;
         int poppedElement = this.heapTable[0];
         this.heapTable[0] = this.heapTable[i];
         // On supprime le dernier element
@@ -65,22 +71,25 @@ public class IntPriorityQueue implements Queue<Integer>{
         i = 0;
         int indexLeftChild = 1;
         int indexRightChild = 2;
-        while ((indexLeftChild < this.capacity && this.heapTable[indexLeftChild] > this.heapTable[i])
-                || (indexRightChild < this.capacity && this.heapTable[indexRightChild] > this.heapTable[i])) {
+        while ((indexLeftChild < this.nbElements-1 && this.heapTable[indexLeftChild] > this.heapTable[i])
+                || (indexRightChild < this.nbElements-1 && this.heapTable[indexRightChild] > this.heapTable[i])) {
             if (this.heapTable[indexLeftChild] > this.heapTable[i]) {
                 int temp = this.heapTable[indexLeftChild];
                 this.heapTable[indexLeftChild] = this.heapTable[i];
                 this.heapTable[i] = temp;
                 i = indexLeftChild;
-                indexLeftChild = 2*i+1;
+                indexLeftChild = 2 * i + 1;
+                indexRightChild = 2 * i + 1;
+            } else {
+                int temp = this.heapTable[indexRightChild];
+                this.heapTable[indexRightChild] = this.heapTable[i];
+                this.heapTable[i] = temp;
+                i = indexRightChild;
+                indexLeftChild = 2 * i + 1;
+                indexRightChild = 2 * i + 1;
             }
-            int temp = this.heapTable[indexRightChild];
-            this.heapTable[indexRightChild] = this.heapTable[i];
-            this.heapTable[i] = temp;
-            i = indexRightChild;
-            indexRightChild = 2*i+1;
-
         }
+        this.nbElements--;
         return poppedElement;
     }
 
@@ -99,7 +108,7 @@ public class IntPriorityQueue implements Queue<Integer>{
         return new IntPriorityQueueIterator(this);
     }
 
-    class IntPriorityQueueIterator implements Iterator<Integer>{
+    static class IntPriorityQueueIterator implements Iterator<Integer>{
         Integer[] tab;
         int currentIndex;
 
